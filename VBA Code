@@ -1,0 +1,105 @@
+Sub StockAnalysis()
+
+For Each ws In Worksheets
+
+ws.Range("I1").Value = "Ticker"
+ws.Range("J1").Value = "Yearly Change"
+ws.Range("K1").Value = "Percent Change"
+ws.Range("L1").Value = "Total Volume"
+
+    Dim lastRow As Long
+    Dim outputRow As Long
+    Dim ticker As String
+    Dim openingPrice As Double
+    Dim closingPrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    Dim totalVolume As Double
+    Dim MaxIncrease As Variant
+    Dim MaxDecrease As Variant
+    Dim MaxVolume As Variant
+    
+   
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    
+    
+    openingPrice = ws.Cells(2, 3).Value
+    ticker = ws.Cells(2, 1).Value
+    totalVolume = 0
+    outputRow = 2
+    
+    ' Loop through each row of data
+    For i = 2 To lastRow
+        
+        If ws.Cells(i, 1).Value <> ticker Then
+            ' Output results for the previous ticker starting from outputRow
+            ws.Cells(outputRow, 9).Value = ticker
+            ws.Cells(outputRow, 10).Value = yearlyChange
+            ws.Cells(outputRow, 11).Value = IIf(openingPrice = 0, 0, percentChange)
+            ws.Cells(outputRow, 12).Value = totalVolume
+            
+            ' Increment outputRow for the next set of results
+            outputRow = outputRow + 1
+            
+            ' Reset variables for the new ticker
+            openingPrice = ws.Cells(i, 3).Value
+            ticker = ws.Cells(i, 1).Value
+            totalVolume = 0
+            
+        End If
+        
+        ' Update total volume
+        totalVolume = totalVolume + ws.Cells(i, 7).Value
+        
+        ' Update closing price
+        closingPrice = ws.Cells(i, 6).Value
+        
+        ' Calculate yearly change and percent change
+        yearlyChange = closingPrice - openingPrice
+        percentChange = (closingPrice - openingPrice) / openingPrice * 100
+        ws.Cells(outputRow, 11).Value = FormatPercent(Percent_Change)
+        
+        
+        If yearlyChange > 0 Then
+            ws.Cells(outputRow, 10).Interior.Color = RGB(0, 255, 0)
+        
+        ElseIf yearlyChange = 0 Then
+            ws.Cells(outputRow, 10).Interior.Color = RGB(255, 255, 255)
+        
+        Else
+            ws.Cells(outputRow, 10).Interior.Color = RGB(255, 0, 0)
+End If
+ 
+        Next i
+
+
+' Insert here for max values
+
+MaxIncrease = Application.WorksheetFunction.Max(ws.Range("K2:K" & outputRow))
+MaxDecrease = Application.WorksheetFunction.Min(ws.Range("K2:K" & outputRow))
+MaxVolume = Application.WorksheetFunction.Max(ws.Range("L2:K" & outputRow))
+
+MaxIncreaseTicker = ws.Cells(Application.WorksheetFunction.Match(MaxIncrease, ws.Range("K2:K" & outputRow), 0) + 1, 9).Value
+MaxDecreaseTicker = ws.Cells(Application.WorksheetFunction.Match(MaxDecrease, ws.Range("K2:K" & outputRow), 0) + 1, 9).Value
+MaxVolumeTicker = ws.Cells(Application.WorksheetFunction.Match(MaxVolume, ws.Range("L2:L" & outputRow), 0) + 1, 9).Value
+
+
+'Output
+
+ws.Cells(2, 15).Value = "Greatest % Increase"
+ws.Cells(3, 15).Value = "Greatest % Decrease"
+ws.Cells(4, 15).Value = "Greatest Total Volume"
+ws.Cells(2, 16).Value = MaxIncreaseTicker
+ws.Cells(3, 16).Value = MaxDecreaseTicker
+ws.Cells(4, 16).Value = MaxVolumeTicker
+ws.Cells(2, 17).Value = FormatPercent(MaxIncrease)
+ws.Cells(3, 17).Value = FormatPercent(MaxDecrease)
+ws.Cells(4, 17).Value = MaxVolume
+
+
+Next ws
+
+
+End Sub
+
+
