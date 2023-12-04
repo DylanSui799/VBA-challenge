@@ -1,6 +1,7 @@
 # VBA-challenge
 
-I worked with classmates and online resources. The project was completed using Microsoft VBA. 
+I worked with classmates and online resources. The project was completed using Microsoft VBA. Working within multiplie study groups allowed me to learn how others created their code, and we were able to help eachother debug and see what worked or didn't work for others. 
+
 
 Instructions
 Create a script that loops through all the stocks for one year and outputs the following information:
